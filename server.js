@@ -36,7 +36,7 @@ app.get("/stats", (req, res) => {
 // API Routes
 
 // route to get workout data
-// TODO: sort?
+
 app.get("/api/workouts", (req, res) => {
 	db.Workout.find({})
 		.populate("exercises")
@@ -60,11 +60,12 @@ app.post("/api/workouts", (req, res) => {
 });
 
 // route to continue workout
-app.put("/api/workouts/:id", ({ body }, res) => {
-	db.Exercise.create(body)
+app.put("/api/workouts/:id", (req, res) => {
+	var workoutID = req.params.id;
+	db.Exercise.create(req.body)
 		.then(({ _id }) =>
 			db.Workout.findOneAndUpdate(
-				{},
+				{ _id: workoutID },
 				{ $push: { exercises: _id } },
 				{ new: true }
 			)
@@ -78,7 +79,6 @@ app.put("/api/workouts/:id", ({ body }, res) => {
 });
 
 // route to get stats
-// TODO: sort?
 app.get("/api/workouts/range", (req, res) => {
 	db.Workout.find({})
 		.populate("exercises")
